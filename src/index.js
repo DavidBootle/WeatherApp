@@ -1,141 +1,273 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 var request = require('request');
 
-// weather info storage
-class WeatherInfo extends React.Component {
-    constructor(props) {
-        super(props);
+class Weather extends React.Component {
 
-        const defaultState = {
-            city: '',
-            weatherType: '',
-            description: '',
-            iconUrl: 'yeet',
-            currentTemp: '',
-            feelsLikeTemp: '',
-            tempMin: '',
-            tempMax: '',
-            humidity: '',
-            windSpeed: '',
-            windDeg: '',
-            infoTime: '',
-            creationTime: ''
-        }
-
-        if (props.weatherinfo !== undefined && this.state != defaultState) {
-            this.setState(props.weatherinfo);
-        } else if (props.weatherinfo !== undefined) {
-            this.state = props.weatherinfo;
-        } else {
-            this.state = defaultState;
-        }
-
-    }
-
-    render() {
-        const page = (
-            <div>
-                <h1>Current Weather Conditions In <b>{this.state.city}</b>:</h1>
-                <img src={this.state.iconUrl} alt="weather-icon"/>
-                <div className="inline">
-                    <h2 className="inline capitalize">{this.state.description}</h2>
-                </div>
-                <p>Current Temperature: {this.state.currentTemp}°F</p>
-                <p>Feels Like: {this.state.feelsLikeTemp}°F</p>
-                <p>Max: {this.state.tempMax}°F<br/>Min: {this.state.tempMin}°F</p>
-                <p>Humidity: {this.state.humidity}%</p>
-                <p>Wind Speed: {this.state.windSpeed} mph<br/>Wind Direction: {this.state.windDeg}°</p>
-                <p>Time Updated: {this.state.creationTime}</p>
-                
-            </div>
-        );
-        return page;
-    }
-}
-
-class CityNameForm extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            city: ''
+            city: props.city,
+            cityName: "--",
+            message: "--",
+            serverTime: getServerTime(),
+            temp: "--",
+            icon: "",
+            high: "--",
+            low: "--",
+            feelsLike: "--",
+            humidity: "--",
+            windSpeed: "--",
+            windDirection: "--",
+            isValid: false
         }
 
-        this.handleSubmitEvent = this.handleSubmitEvent.bind(this);
+        this.getData = this.getData.bind(this);
+        this.cityNameInput = this.cityNameInput.bind(this);
+
+        this.cityNameRef = React.createRef();
     }
 
-    handleSubmitEvent = (event) => {
-        event.preventDefault();
+    componentDidMount() {
+        // get inital data
+
+        this.getData();
+
+        // set the interval
+        setInterval(this.getData, 1000); // runs every 1 second
+    }
+
+    getData = () => {
+        // get data from weather api
         let apiKey = '45907d22480db6848331344fca6458c2';
-        let url = `http://api.openweathermap.org/data/2.5/weather?q=${this.state.city}&appid=${apiKey}&units=imperial`;
+        let city = this.cityNameRef.current.value;
+        let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
 
         request(url, function (err, response, body) {
-            changeCity(JSON.parse(body));
-        });
+            var weatherInfo = JSON.parse(body);
+
+            // if city name is invalid
+            // eslint-disable-next-line
+            if (weatherInfo.cod == 400 || weatherInfo.cod == 404) {
+                this.setState({
+                    city: this.state.city,
+                    cityName: "--",
+                    message: "--",
+                    serverTime: getServerTime(),
+                    temp: "--",
+                    icon: "",
+                    high: "--",
+                    low: "--",
+                    feelsLike: "--",
+                    humidity: "--",
+                    windSpeed: "--",
+                    windDirection: "--",
+                    isValid: false
+                });
+            } else { // if city name is valid
+                this.setState( {
+
+                    // set properties
+                    city: weatherInfo.name, // city
+                    cityName: weatherInfo.name + ", " + weatherInfo.sys.country,
+                    message: getWeatherMessage(weatherInfo.weather[0].id),
+                    serverTime: getServerTime(),
+                    temp: Math.round(weatherInfo.main.temp).toString() + "°F",
+                    icon: `http://openweathermap.org/img/wn/${weatherInfo.weather[0].icon}@2x.png`,
+                    high: Math.round(weatherInfo.main.temp_max).toString() + "°F",
+                    low: Math.round(weatherInfo.main.temp_min).toString() + "°F",
+                    feelsLike: Math.round(weatherInfo.main.feels_like).toString() + "°F",
+                    humidity: Math.round(weatherInfo.main.humidity).toString() + "%",
+                    windSpeed: Math.round(weatherInfo.wind.speed).toString() + " mph",
+                    windDirection: Math.round(weatherInfo.wind.deg) + "°",
+                    isValid: true
+                } )
+            }
+        }.bind(this));
     }
 
-    handleCityChangeEvent = (event) => {
-        this.setState({city: event.target.value});
+    cityNameInput = (event) => {
+        this.setState( {city: event.target.value} );
+        setTimeout(this.getData, 100);
     }
 
     render() {
-        return (
-            <div>
-                <form onSubmit={this.handleSubmitEvent}>
-                    <label for="cityNameInput">City Name: </label>
-                    <input
-                        type="text"
-                        name="city"
-                        value={this.state.city}
-                        onChange={this.handleCityChangeEvent}
-                    />
-                    <input type="submit"></input>
-                </form>
-            </div>
-        );
+        if (this.state.isValid) {
+            return (
+                <div>
+                    <div class="container pb-4">
+                        <h1 class="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
+                    </div>
+                    <div class="container">
+                        <img src={this.state.icon} width="100" height="100" alt=""/>
+                        <h2 style={{display: "inline"}}>In {this.state.cityName}, {this.state.message}</h2>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="card col-md-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Temperature</h5>
+                                    <p class="card-text">Right now in {this.state.city} it's <strong>{this.state.temp}</strong>, with a high of {this.state.high} and a low of {this.state.low}. Outside, it feels like {this.state.feelsLike}.&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
+                                </div>
+                            </div>
+                            <div class="card col-md-4">
+                                <div class="card-body">
+                                        <h5 class="card-title">Wind</h5>
+                                        <p class="card-text">The wind is currently {this.state.windSpeed} at {this.state.windDirection}.&nbsp; &nbsp; &nbsp;&nbsp;</p>
+                                </div>
+                            </div>
+                            <div class="card col-md-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Humidity<strong>&nbsp;</strong></h5>
+                                    <p class="card-text">&nbsp;The humidity is currently <strong>{this.state.humidity}.&nbsp;</strong>&nbsp;</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container small mt-2">
+                        <p className="text-muted">{this.state.serverTime}</p>
+                    </div>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <div class="container pb-4">
+                        <h1 class="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
+                    </div>
+                    <div class="container small">
+                        <p className="text-muted">{this.state.serverTime}</p>
+                    </div>
+                </div>
+            );
+        }
+            
     }
 }
 
-// get weather info
-function getWeather(city) {
-    let apiKey = '45907d22480db6848331344fca6458c2';
-    let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
+function getWeatherMessage(weatherCode) {
+    // eslint-disable-next-line
+    switch (weatherCode) {
+        case 200: return "it's storming. Expect light rain and lightning.";
+        case 201: return "it's storming. Expect rain and lightning";
+        case 202: return "it's storming. Expect heavy rain and lightning.";
+        case 210: return "it's storming. Expect light storms.";
+        case 211: return "it's storming.";
+        case 212: return "it's storming. Expect heavy storms.";
+        case 221: return "it's storming. Expect scattered storms.";
+        case 230: return "it's storming. Expect a light drizzle.";
+        case 231: return "it's storming. Expect a medium drizzle.";
+        case 232: return "it's storming. Expect a heavy drizzle.";
 
-    request(url, function (err, response, body) {
-        return JSON.parse(body);
-    });
-}
+        case 300: return "it's drizzling. Expect a light drizzle.";
+        case 301: return "it's drizzling.";
+        case 302: return "it's drizzling. Expect a heavy drizzle.";
+        case 310: return "it's drizzling. Expect a light drizzle mixed with rain.";
+        case 311: return "it's drizzling. Expect a medium drizzle mixed with rain.";
+        case 312: return "it's drizzling. Expect a heavy drizzle mixed with rain.";
+        case 313: return "it's drizzling. Expect drizzling mixed with scattered showers.";
+        case 314: return "it's drizzling. Expect drizzling mixed with scattered heavy showers.";
+        case 321: return "the weather service says \"shower drizzle\". So whatever that is, I guess.";
+        
+        case 500: return "it's raining. Expect light rain.";
+        case 501: return "it's raining. Expect moderate rain.";
+        case 502: return "it's raining. Expect heavy rain.";
+        case 503: return "it's raining. Expect very heavy rain.";
+        case 504: return "it's raining. Expect extreme rain.";
+        case 511: return "it's raining. Expect freezing rain.";
+        case 520: return "it's raining. Expect light showers.";
+        case 521: return "it's raining. Expect showers.";
+        case 522: return "it's raining. Expect heavy showers.";
+        case 531: return "it's raining. Expect scattered showers.";
 
-function formatDate(milliseconds) {
-    var date = new Date(milliseconds);
-    return date.getHours().toString() + ":" + date.getMinutes().toString() + ":" + date.getMilliseconds().toString();
-}
+        case 600: return "it's snowing. Expect light snow.";
+        case 601: return "it's snowing."
+        case 602: return "it's snowing. Expect heavy snow.";
+        case 611: return "it's sleeting.";
+        case 612: return "it's sleeting. Expect light sleet showers.";
+        case 613: return "it's sleeting. Expect sleet showers.";
+        case 615: return "it's snowing. Expect mixed light rain and snow.";
+        case 616: return "it's snowing. Expect mixed rain and snow.";
+        case 620: return "it's snowing. Expect light snow showers.";
+        case 621: return "it's snowing. Expect snow showers.";
+        case 622: return "it's snowing. Expect heavy snow showers.";
 
-function changeCity(weatherInfo) {
-    var weather = {
-        city: weatherInfo.name,
-        weatherType: weatherInfo.weather[0].main,
-        description: weatherInfo.weather[0].description,
-        iconUrl: `http://openweathermap.org/img/wn/${weatherInfo.weather[0].icon}@2x.png`,
-        currentTemp: Math.round(weatherInfo.main.temp),
-        feelsLikeTemp: Math.round(weatherInfo.main.feels_like),
-        tempMin: Math.round(weatherInfo.main.temp_min),
-        tempMax: Math.round(weatherInfo.main.temp_max),
-        humidity: Math.round(weatherInfo.main.humidity),
-        windSpeed: Math.round(weatherInfo.wind.speed),
-        windDeg: weatherInfo.wind.deg,
-        infoTime: formatDate(weatherInfo.dt),
-        creationTime: new Date().toString()
+        case 701: return "it's misty.";
+        case 711: return "it's smoky.";
+        case 721: return "it's hazy.";
+        case 731: return "there are dust devils.";
+        case 741: return "it's foggy.";
+        case 751: return "it's sandy.";
+        case 761: return "it's dusty.";
+        case 762: return "there is volcanic ash.";
+        case 771: return "there are squalls.";
+        case 781: return "there are tornados.";
+
+        case 800: return "there are clear skies.";
+
+        case 801: return "there are a few clouds.";
+        case 802: return "there are scattered clouds.";
+        case 803: return "it's cloudy.";
+        case 804: return "it's overcast.";
     }
-    var renderCompile = (
-        <div>
-            <CityNameForm/>
-            <WeatherInfo weatherinfo={weather}/>
-        </div>
-    );
-    ReactDOM.render(renderCompile, document.getElementById('root'));
 }
 
-ReactDOM.render(<CityNameForm/>, document.getElementById("root"));
+function getDay(dayNumber) {
+    // eslint-disable-next-line
+    switch (dayNumber) {
+        case 0: return "Sunday";
+        case 1: return "Monday";
+        case 2: return "Tuesday";
+        case 3: return "Wednesday";
+        case 4: return "Thursday";
+        case 5: return "Friday";
+        case 6: return "Saturday";
+    }
+}
+
+function getMonth(month) {
+    // eslint-disable-next-line
+    switch (month) {
+        case 0: return "January";
+        case 1: return "February";
+        case 2: return "March";
+        case 3: return "April";
+        case 4: return "May";
+        case 5: return "June";
+        case 6: return "July";
+        case 7: return "August";
+        case 8: return "September";
+        case 9: return "October";
+        case 10: return "November";
+        case 11: return "December";
+    }
+}
+
+function getServerTime() {
+    var serverTime = new Date();
+    var timeInfo = {};
+    timeInfo.day = getDay(serverTime.getDay());
+    timeInfo.date = serverTime.getDate();
+    timeInfo.year = serverTime.getFullYear();
+    if (serverTime.getHours() < 12) {
+        timeInfo.hour = serverTime.getHours().toString().padStart(2, "0");
+        timeInfo.timeOfDay = "AM";
+    } else {
+        timeInfo.hour = (serverTime.getHours() - 12).toString().padStart(2, "0");
+        timeInfo.timeOfDay = "PM";
+    }
+    timeInfo.minute = serverTime.getMinutes().toString().padStart(2, "0");
+    timeInfo.second = serverTime.getSeconds().toString().padStart(2, "0");
+    timeInfo.month = getMonth(serverTime.getMonth());
+
+    return `${timeInfo.day}, ${timeInfo.month} ${timeInfo.date} ${timeInfo.year}, ${timeInfo.hour}:${timeInfo.minute}:${timeInfo.second} ${timeInfo.timeOfDay}`;
+}
+
+// #region Start
+
+ReactDOM.render((
+    <Weather/>
+), document.getElementById('root'));
+
+// #endregion
