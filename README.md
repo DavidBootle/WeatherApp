@@ -2,7 +2,7 @@
 © 2020 David Bootle
 
 ## How to Run the Project Locally
-Download the project, then run the following commands from the git root.
+Download or clone the project, then run the following commands from the git root.
 ```bash
 npm install missing
 npm run build
