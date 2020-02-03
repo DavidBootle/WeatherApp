@@ -1,7 +1,7 @@
 # WeatherApp
 © 2020: David Bootle
 
-## Quick Run
+## How to Run the Project Locally
 Download the project, then run the following commands from the git root.
 ```bash
 npm install missing
