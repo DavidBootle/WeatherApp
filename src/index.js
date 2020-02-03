@@ -82,7 +82,16 @@ class Weather extends React.Component {
                     windSpeed: Math.round(weatherInfo.wind.speed).toString() + " mph",
                     windDirection: Math.round(weatherInfo.wind.deg) + "°",
                     isValid: true
-                } )
+                } );
+                if (isNaN(weatherInfo.wind.deg) || weatherInfo.wind.deg === undefined) {
+                    this.setState({
+                        windDirection: "with no distinct direction."
+                    });
+                } else {
+                    this.setState({
+                        windDirection: getWindDirection(weatherInfo.wind.deg)
+                    })
+                }
             }
         }.bind(this));
     }
@@ -114,7 +123,7 @@ class Weather extends React.Component {
                             <div class="card col-md-4">
                                 <div class="card-body">
                                         <h5 class="card-title">Wind</h5>
-                                        <p class="card-text">The wind is currently {this.state.windSpeed} at {this.state.windDirection}.&nbsp; &nbsp; &nbsp;&nbsp;</p>
+                                        <p class="card-text">The wind is currently blowing to the {this.state.windDirection} at {this.state.windSpeed}.</p>
                                 </div>
                             </div>
                             <div class="card col-md-4">
@@ -262,6 +271,18 @@ function getServerTime() {
     timeInfo.month = getMonth(serverTime.getMonth());
 
     return `${timeInfo.day}, ${timeInfo.month} ${timeInfo.date} ${timeInfo.year}, ${timeInfo.hour}:${timeInfo.minute}:${timeInfo.second} ${timeInfo.timeOfDay}`;
+}
+
+function getWindDirection(deg) {
+    if (deg >= 0 && deg < 22.5) { return "north" } // if between 0 and 22.5 return north
+    if (deg >= 22.5 && deg < 67.5) { return "northeast" } // if between 22.5 and 67.5 return northwest
+    if (deg >= 67.5 && deg < 112.5) { return "east" } // if between 67.5 and 112.5 return east
+    if (deg >= 112.5 && deg < 157.5) { return "southeast" } // if between 112.5 and 157.5 return southeast
+    if (deg >= 157.5 && deg < 202.5) { return "south" } // if between 157.5 and 202.5 return south
+    if (deg >= 202.5 && deg < 247.5) { return "southwest" } // if between 202.5 and 247.5 return southwest
+    if (deg >= 247.5 && deg < 292.5) { return "west" } // if between 247.5 and 292.5 return west
+    if (deg >= 292.5 && deg < 337.5) { return "northwest" } // if between 292.5 and 337.5 return northwest
+    if (deg >= 337.5 && deg <= 360) { return "north" } // if between 337.5 and 360 return north
 }
 
 // #region Start
