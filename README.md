@@ -1,3 +1,15 @@
+# WeatherApp
+© 2020 David Bootle
+
+## How to Run the Project Locally
+Download or clone the project, then run the following commands from the git root.
+```bash
+npm install missing
+npm run build
+npm install serve
+serve -s build
+```
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
