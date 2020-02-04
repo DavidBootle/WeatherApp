@@ -45,6 +45,10 @@ class Weather extends React.Component {
         let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
 
         request(url, function (err, response, body) {
+            if (err) {
+                alert(err);
+            }
+
             var weatherInfo = JSON.parse(body);
 
             // if city name is invalid
