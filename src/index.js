@@ -123,48 +123,48 @@ class Weather extends React.Component {
         if (this.state.isValid) {
             return (
                 <div>
-                    <div class="container pb-4">
-                        <h1 class="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
+                    <div className="container pb-4 mt-4">
+                        <h1 className="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
                     </div>
-                    <div class="container">
+                    <div className="container">
                         <img src={this.state.icon} width="100" height="100" alt=""/>
                         <h2 style={{display: "inline"}}>In {this.state.cityName}, {this.state.message}</h2>
                     </div>
-                    <div class="container">
-                        <div class="row">
-                            <div class="card col-md-4">
-                                <div class="card-body">
-                                    <h5 class="card-title">Temperature</h5>
-                                    <p class="card-text">Right now in {this.state.city} it's <strong>{this.state.temp}</strong>, with a high of {this.state.high} and a low of {this.state.low}. Outside, it feels like {this.state.feelsLike}.&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
+                    <div className="container">
+                        <div className="row">
+                            <div className="card col-md-4">
+                                <div className="card-body">
+                                    <h5 className="card-title">Temperature</h5>
+                                    <p className="card-text">Right now in {this.state.city} it's <strong>{this.state.temp}</strong>, with a high of {this.state.high} and a low of {this.state.low}. Outside, it feels like {this.state.feelsLike}.&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
                                 </div>
                             </div>
-                            <div class="card col-md-4">
-                                <div class="card-body">
-                                        <h5 class="card-title">Wind</h5>
-                                        <p class="card-text">The wind is currently blowing to the {this.state.windDirection} at {this.state.windSpeed}.</p>
+                            <div className="card col-md-4">
+                                <div className="card-body">
+                                        <h5 className="card-title">Wind</h5>
+                                        <p className="card-text">The wind is currently blowing to the {this.state.windDirection} at {this.state.windSpeed}.</p>
                                 </div>
                             </div>
-                            <div class="card col-md-4">
-                                <div class="card-body">
-                                    <h5 class="card-title">Humidity<strong>&nbsp;</strong></h5>
-                                    <p class="card-text">&nbsp;The humidity is currently <strong>{this.state.humidity}.&nbsp;</strong>&nbsp;</p>
+                            <div className="card col-md-4">
+                                <div className="card-body">
+                                    <h5 className="card-title">Humidity<strong>&nbsp;</strong></h5>
+                                    <p className="card-text">&nbsp;The humidity is currently <strong>{this.state.humidity}.&nbsp;</strong>&nbsp;</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="container small mt-2">
-                        <p className="text-muted">{this.state.serverTime}</p>
+                        <p className="text-muted centered">{this.state.serverTime}</p>
                     </div>
                 </div>
             );
         } else {
             return (
                 <div>
-                    <div class="container pb-4">
-                        <h1 class="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
+                    <div className="container pb-4">
+                        <h1 className="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
                     </div>
-                    <div class="container small">
-                        <p className="text-muted">{this.state.serverTime}</p>
+                    <div className="container small">
+                        <p className="text-muted centered">{this.state.serverTime}</p>
                     </div>
                 </div>
             );
