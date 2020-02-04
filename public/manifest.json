@@ -3,9 +3,15 @@
   "name": "Weather App by Bootle",
   "icons": [
     {
+<<<<<<< HEAD
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+=======
+      "src": "icon.png",
+      "sizes": "225x225",
+      "type": "image/png"
+>>>>>>> 80cdcb2034e613f802d67a5a224022164ee71880
     }
   ],
   "start_url": ".",
