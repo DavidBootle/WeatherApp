@@ -152,8 +152,8 @@ class Weather extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div class="container small mt-2">
-                        <p className="text-muted centered">{this.state.serverTime}</p>
+                    <div className="container small text-muted centered mt-2">
+                        {this.state.serverTime}
                     </div>
                 </div>
             );
@@ -163,8 +163,8 @@ class Weather extends React.Component {
                     <div className="container pb-4 mt-4">
                         <h1 className="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
                     </div>
-                    <div className="container small">
-                        <p className="text-muted centered">{this.state.serverTime}</p>
+                    <div className="container small text-muted centered">
+                        {this.state.serverTime}
                     </div>
                 </div>
             );
