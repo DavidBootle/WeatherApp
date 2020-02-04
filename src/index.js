@@ -46,55 +46,69 @@ class Weather extends React.Component {
 
         request(url, function (err, response, body) {
             if (err) {
-                alert(err);
-            }
-
-            var weatherInfo = JSON.parse(body);
-
-            // if city name is invalid
-            // eslint-disable-next-line
-            if (weatherInfo.cod == 400 || weatherInfo.cod == 404) {
                 this.setState({
-                    city: this.state.city,
-                    cityName: "--",
-                    message: "--",
-                    serverTime: getServerTime(),
-                    temp: "--",
+                    city: "",
+                    cityName: "",
+                    message: "ERROR: " + err,
+                    serverTime: "ERR",
+                    temp: "ERR",
                     icon: "",
-                    high: "--",
-                    low: "--",
-                    feelsLike: "--",
-                    humidity: "--",
-                    windSpeed: "--",
-                    windDirection: "--",
-                    isValid: false
-                });
-            } else { // if city name is valid
-                this.setState( {
-
-                    // set properties
-                    city: weatherInfo.name, // city
-                    cityName: weatherInfo.name + ", " + weatherInfo.sys.country,
-                    message: getWeatherMessage(weatherInfo.weather[0].id),
-                    serverTime: getServerTime(),
-                    temp: Math.round(weatherInfo.main.temp).toString() + "°F",
-                    icon: `http://openweathermap.org/img/wn/${weatherInfo.weather[0].icon}@2x.png`,
-                    high: Math.round(weatherInfo.main.temp_max).toString() + "°F",
-                    low: Math.round(weatherInfo.main.temp_min).toString() + "°F",
-                    feelsLike: Math.round(weatherInfo.main.feels_like).toString() + "°F",
-                    humidity: Math.round(weatherInfo.main.humidity).toString() + "%",
-                    windSpeed: Math.round(weatherInfo.wind.speed).toString() + " mph",
-                    windDirection: Math.round(weatherInfo.wind.deg) + "°",
+                    high: "ERR",
+                    low: "ERR",
+                    feelsLike: "ERR",
+                    humidity: "ERR",
+                    windSpeed: "ERR",
+                    windDirection: "ERR",
                     isValid: true
-                } );
-                if (isNaN(weatherInfo.wind.deg) || weatherInfo.wind.deg === undefined) {
+                });
+            } else {
+                var weatherInfo = JSON.parse(body);
+
+                // if city name is invalid
+                // eslint-disable-next-line
+                if (weatherInfo.cod == 400 || weatherInfo.cod == 404) {
                     this.setState({
-                        windDirection: "with no distinct direction."
+                        city: this.state.city,
+                        cityName: "--",
+                        message: "--",
+                        serverTime: getServerTime(),
+                        temp: "--",
+                        icon: "",
+                        high: "--",
+                        low: "--",
+                        feelsLike: "--",
+                        humidity: "--",
+                        windSpeed: "--",
+                        windDirection: "--",
+                        isValid: false
                     });
-                } else {
-                    this.setState({
-                        windDirection: getWindDirection(weatherInfo.wind.deg)
-                    })
+                } else { // if city name is valid
+                    this.setState( {
+
+                        // set properties
+                        city: weatherInfo.name, // city
+                        cityName: weatherInfo.name + ", " + weatherInfo.sys.country,
+                        message: getWeatherMessage(weatherInfo.weather[0].id),
+                        serverTime: getServerTime(),
+                        temp: Math.round(weatherInfo.main.temp).toString() + "°F",
+                        icon: `http://openweathermap.org/img/wn/${weatherInfo.weather[0].icon}@2x.png`,
+                        high: Math.round(weatherInfo.main.temp_max).toString() + "°F",
+                        low: Math.round(weatherInfo.main.temp_min).toString() + "°F",
+                        feelsLike: Math.round(weatherInfo.main.feels_like).toString() + "°F",
+                        humidity: Math.round(weatherInfo.main.humidity).toString() + "%",
+                        windSpeed: Math.round(weatherInfo.wind.speed).toString() + " mph",
+                        windDirection: Math.round(weatherInfo.wind.deg) + "°",
+                        isValid: true
+                    } );
+                    if (isNaN(weatherInfo.wind.deg) || weatherInfo.wind.deg === undefined) {
+                        this.setState({
+                            windDirection: "with no distinct direction."
+                        });
+                    } else {
+                        this.setState({
+                            windDirection: getWindDirection(weatherInfo.wind.deg)
+                        })
+                    }
                 }
             }
         }.bind(this));
