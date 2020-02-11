@@ -48,7 +48,7 @@ class Weather extends React.Component {
 
     getData = () => {
         // get data from weather api
-        let apiKey = '45907d22480db6848331344fca6458c2';
+        let apiKey = process.env.KEY;
         let city = this.cityNameRef.current.value;
         let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
 
