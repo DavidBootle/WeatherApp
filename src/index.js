@@ -46,6 +46,7 @@ class Weather extends React.Component {
 
         request(url, function (err, response, body) {
             if (err) {
+                console.log(err);
                 this.setState({
                     city: "",
                     cityName: "",
