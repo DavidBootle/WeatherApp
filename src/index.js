@@ -24,6 +24,7 @@ class Weather extends React.Component {
         }
 
         this.getData = this.getData.bind(this);
+        this.getTime = this.getTime.bind(this);
         this.cityNameInput = this.cityNameInput.bind(this);
 
         this.cityNameRef = React.createRef();
@@ -35,7 +36,14 @@ class Weather extends React.Component {
         this.getData();
 
         // set the interval
-        setInterval(this.getData, 1000); // runs every 1 second
+        setInterval(this.getData, 5000); // runs every 5 seconds
+        setInterval(this.getTime, 500); // runs every 1/2 seconds
+    }
+    
+    getTime = () => {
+        this.setState({
+            serverTime: getServerTime()
+        });
     }
 
     getData = () => {
