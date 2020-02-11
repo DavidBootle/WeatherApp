@@ -36,8 +36,7 @@ class Weather extends React.Component {
         this.getData();
 
         // set the interval
-        setInterval(this.getData, 5000); // runs every 5 seconds
-        setInterval(this.getTime, 500); // runs every 1/2 seconds
+        setInterval(this.getData, 2000); // runs every 5 seconds
     }
     
     getTime = () => {
@@ -48,7 +47,7 @@ class Weather extends React.Component {
 
     getData = () => {
         // get data from weather api
-        let apiKey = process.env.KEY;
+        let apiKey = 'f067b653c903f844ce5c3dd5e294bf5c;
         let city = this.cityNameRef.current.value;
         let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
 
