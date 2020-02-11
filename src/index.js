@@ -123,8 +123,8 @@ class Weather extends React.Component {
         if (this.state.isValid) {
             return (
                 <div>
-                    <div className="container pb-4 mt-4">
-                        <h1 className="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
+                    <div className="container pb-4 mt-4 title-box">
+                        <h1 className="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input/></h1>
                     </div>
                     <div className="container">
                         <img src={this.state.icon} width="100" height="100" alt=""/>
