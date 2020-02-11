@@ -24,6 +24,7 @@ class Weather extends React.Component {
         }
 
         this.getData = this.getData.bind(this);
+        this.getTime = this.getTime.bind(this);
         this.cityNameInput = this.cityNameInput.bind(this);
 
         this.cityNameRef = React.createRef();
@@ -36,11 +37,18 @@ class Weather extends React.Component {
 
         // set the interval
         setInterval(this.getData, 2000); // runs every 2 seconds
+        setInterval(this.getTime, 1000); // runs every second
+    }
+
+    getTime = () => {
+        this.setState({
+            serverTime: getServerTime()
+        });
     }
 
     getData = () => {
         // get data from weather api
-        let apiKey = 'f067b653c903f844ce5c3dd5e294bf5c;
+        let apiKey = 'f067b653c903f844ce5c3dd5e294bf5c';
         let city = this.cityNameRef.current.value;
         let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
 
@@ -125,9 +133,9 @@ class Weather extends React.Component {
             return (
                 <div>
                     <div className="container pb-4 mt-4 title-box">
-                        <h1 className="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input/></h1>
+                        <h1 className="display-4 col-xl-12">Get the Weather in <br/><input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input'/></h1>
                     </div>
-                    <div className="container">
+                    <div className="container centered">
                         <img src={this.state.icon} width="100" height="100" alt=""/>
                         <h2 style={{display: "inline"}}>In {this.state.cityName}, {this.state.message}</h2>
                     </div>
@@ -161,8 +169,8 @@ class Weather extends React.Component {
         } else {
             return (
                 <div>
-                    <div className="container pb-4 mt-4">
-                        <h1 className="display-4 col-xl-12">Get the Weather in <input type="text" onChange={this.cityNameInput} ref={this.cityNameRef}/></h1>
+                    <div className="container pb-4 mt-4 title-box">
+                        <h1 className="display-4 col-xl-12">Get the Weather in <br/><input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input'/></h1>
                     </div>
                     <div className="container small text-muted centered">
                         {this.state.serverTime}
