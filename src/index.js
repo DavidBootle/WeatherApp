@@ -124,7 +124,7 @@ class Weather extends React.Component {
 
     cityNameInput = (event) => {
         this.setState( {city: event.target.value} );
-        setTimeout(this.getData, 100);
+        setTimeout(this.getData, 500);
     }
 
     render() {
