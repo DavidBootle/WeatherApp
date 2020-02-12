@@ -40,7 +40,7 @@ class Weather extends React.Component {
         this.getData();
 
         // set the interval
-        setInterval(this.getData, 2000); // runs every 2 seconds
+        setInterval(this.getData, 3000); // runs every 2 seconds
         setInterval(this.getTime, 1000); // runs every second
     }
 
@@ -55,22 +55,19 @@ class Weather extends React.Component {
         // get data from weather api
         let apiKey = 'f067b653c903f844ce5c3dd5e294bf5c';
         var location = parseLocation(this.cityNameRef.current.value);
+        var url;
         if (location.city && location.state && location.country) {
-            this.setState({city: location.city, state: location.state, country: location.country});
-            var url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.state},${location.country}&appid=${apiKey}&units=imperial`;
-        } else if (location.city && location.state) {
-            this.setState({city: location.city, state: location.state});
-            var url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.state}&appid=${apiKey}&units=imperial`;
+            url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.state},${location.country}&appid=${apiKey}&units=imperial`;
+        } else if (location.city !== undefined && location.state !== undefined) {
+            url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.state}&appid=${apiKey}&units=imperial`;
         } else if (location.city && location.country) {
-            this.setState({city: location.city, country: location.country});
-            var url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.country}&appid=${apiKey}&units=imperial`;
+            url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.country}&appid=${apiKey}&units=imperial`;
         } else if (location.city) {
-            this.setState({city: location.city});
-            var url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city}&appid=${apiKey}&units=imperial`
+            url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city}&appid=${apiKey}&units=imperial`
         } else {
-            this.setState({city: undefined});
-            var url = `https://api.openweathermap.org/data/2.5/weather?q=&appid=${apiKey}&units=imperial`
+            url = `https://api.openweathermap.org/data/2.5/weather?q=&appid=${apiKey}&units=imperial`
         }
+        this.setState({city: location.city, state: location.state, country: location.country});
 
         request(url, function (err, response, body) {
             if (err) {
@@ -115,7 +112,7 @@ class Weather extends React.Component {
                     this.setState( {
 
                         // set properties
-                        city: weatherInfo.name, // city
+                        city: this.state.city, // city
                         cityName: weatherInfo.name + ", " + weatherInfo.sys.country,
                         message: getWeatherMessage(weatherInfo.weather[0].id),
                         serverTime: getServerTime(),
@@ -145,6 +142,7 @@ class Weather extends React.Component {
 
     cityNameInput = (event) => {
         this.setState( {city: event.target.value} );
+        // eslint-disable-next-line
         if (event.target.value.toLowerCase() == "zalgo") {
             this.setState({zalgo: true});
         } else {
@@ -157,6 +155,16 @@ class Weather extends React.Component {
         // get url
 
         if (this.state.isValid) {
+            // eslint-disable-next-line
+            var cityName;
+            if (this.state.state) {
+                cityName = this.state.city.charAt(0).toUpperCase() + this.state.city.substring(1) + ", " + this.state.state.toUpperCase();
+            } else if (this.state.country) {
+                cityName = this.state.city.charAt(0).toUpperCase() + this.state.city.substring(1) + ", " + this.state.coutnry.toUpperCase();
+            } else {
+                cityName =this.state.cityName;
+            }
+
             return (
                 <div>
                     <div className="container pb-4 mt-4 title-box">
@@ -171,7 +179,7 @@ class Weather extends React.Component {
                             <div className="card col-md-4">
                                 <div className="card-body">
                                     <h5 className="card-title">Temperature</h5>
-                                    <p className="card-text">Right now in {this.state.city} it's <strong>{this.state.temp}</strong>, with a high of {this.state.high} and a low of {this.state.low}. Outside, it feels like {this.state.feelsLike}.&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
+                                    <p className="card-text">Right now in {cityName} it's <strong>{this.state.temp}</strong>, with a high of {this.state.high} and a low of {this.state.low}. Outside, it feels like {this.state.feelsLike}.&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
                                 </div>
                             </div>
                             <div className="card col-md-4">
@@ -194,6 +202,7 @@ class Weather extends React.Component {
                 </div>
             );
         } else {
+            // eslint-disable-next-line
             if (this.state.zalgo == true) {
                 return (
                     <div>
@@ -355,14 +364,17 @@ function getWindDirection(deg) {
 
 function parseLocation(locationString) {
     var locationInfo = locationString.split(',')
+    // eslint-disable-next-line
     locationInfo = locationInfo.filter(function(value, index, array) { return value != "" }); // removes blank space objects
     var locationInfoTemp = [];
     locationInfo.forEach(function(value, index, array) {
         // remove space from front
+        // eslint-disable-next-line
         while (value[0] == " ") {
             value = value.substring(1);
         }
         // remove spaces from rear
+        // eslint-disable-next-line
         while (value[value.length - 1] == " ") {
             value = value.substring(0, value.length - 1);
         }
@@ -372,6 +384,7 @@ function parseLocation(locationString) {
 
 
     // no search params
+    // eslint-disable-next-line
     if (locationInfo.length == 0) {
         return {
             city: undefined,
@@ -380,6 +393,7 @@ function parseLocation(locationString) {
         };
     } // no search parameters
     // only city
+    // eslint-disable-next-line
     if (locationInfo.length == 1) {
         return {
             city: locationInfo[0].toLowerCase(),
@@ -388,34 +402,42 @@ function parseLocation(locationString) {
         };
     }
     // if it has country or state, determine which one, and format them correctly
+    // eslint-disable-next-line
     if (locationInfo.length == 2 || locationInfo.length == 3) {
         // check if it's a state
         var locations = require('./locations');
         var isState = false;
+        // eslint-disable-next-line
         var state = undefined;
         var isCountry = false;
+        // eslint-disable-next-line
         var country = undefined;
 
         locations.stateList.forEach(function (value, index, array) {
+            // eslint-disable-next-line
             if (value.name == locationInfo[1].toLowerCase() || value.abbreviation == locationInfo[1].toUpperCase()) {
                 isState = true;
                 state = value.abbreviation.toUpperCase();
             }
         });
         locations.countryList.forEach(function (value, index, array) {
+            // eslint-disable-next-line
             if (value.name == locationInfo[1].toLowerCase() || value.code == locationInfo[1].toUpperCase()) {
                 isCountry = true;
                 country = value.code.toUpperCase();
             }
         });
+        // eslint-disable-next-line
         if (locationInfo.length == 3) {
             locations.countryList.forEach(function (value, index, array) {
+                // eslint-disable-next-line
                 if (value.name == locationInfo[1].toLowerCase() || value.code == locationInfo[2].toUpperCase()) {
                     isCountry = true;
                     country = value.code.toUpperCase();
                 }
             });
         }
+        // eslint-disable-next-line
         if (isState && isCountry && locationInfo.length == 3) {
             return {
                 city: locationInfo[0].toLowerCase(),
@@ -426,7 +448,7 @@ function parseLocation(locationString) {
             return {
                 city: locationInfo[0].toLowerCase(),
                 state: locationInfo[1].toLowerCase(),
-                country: undefined
+                country: 'usa'
             }
         } else if (isCountry) {
             return {
@@ -440,6 +462,13 @@ function parseLocation(locationString) {
                 state: undefined,
                 country: undefined
             }
+        }
+    }
+    else {
+        return {
+            city: undefined,
+            state: undefined,
+            country: undefined
         }
     }
 }
