@@ -390,8 +390,8 @@ function parseLocation(locationString) {
             value = value.substring(1);
         }
         // remove spaces from rear
-        while (value[value.length -1] == " ") {
-            value = value.substring(0, value.length - 2);
+        while (value[value.length - 1] == " ") {
+            value = value.substring(0, value.length - 1);
         }
         locationInfoTemp.push(value);
     });
