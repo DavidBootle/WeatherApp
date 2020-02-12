@@ -9,7 +9,9 @@ class Weather extends React.Component {
         super(props);
 
         this.state = {
-            city: props.city,
+            city: undefined,
+            state: undefined,
+            country: undefined,
             cityName: "--",
             message: "--",
             serverTime: getServerTime(),
@@ -51,8 +53,23 @@ class Weather extends React.Component {
 
         // get data from weather api
         let apiKey = 'f067b653c903f844ce5c3dd5e294bf5c';
-        let city = this.cityNameRef.current.value;
-        let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
+        var location = parseLocation(this.cityNameRef.current.value);
+        if (location.city && location.state && location.country) {
+            this.setState({city: location.city, state: location.state, country: location.country});
+            var url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.state},${location.country}&appid=${apiKey}&units=imperial`;
+        } else if (location.city && location.state) {
+            this.setState({city: location.city, state: location.state});
+            var url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.state}&appid=${apiKey}&units=imperial`;
+        } else if (location.city && location.country) {
+            this.setState({city: location.city, country: location.country});
+            var url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city},${location.country}&appid=${apiKey}&units=imperial`;
+        } else if (location.city) {
+            this.setState({city: location.city});
+            var url = `https://api.openweathermap.org/data/2.5/weather?q=${location.city}&appid=${apiKey}&units=imperial`
+        } else {
+            this.setState({city: undefined});
+            var url = `https://api.openweathermap.org/data/2.5/weather?q=&appid=${apiKey}&units=imperial`
+        }
 
         request(url, function (err, response, body) {
             if (err) {
@@ -364,17 +381,22 @@ function getWindDirection(deg) {
 }
 
 function parseLocation(locationString) {
-    locationInfo = locationString.split(',')
+    var locationInfo = locationString.split(',')
     locationInfo = locationInfo.filter(function(value, index, array) { return value != "" }); // removes blank space objects
-    locationInfoTemp = [];
+    var locationInfoTemp = [];
     locationInfo.forEach(function(value, index, array) {
+        // remove space from front
         while (value[0] == " ") {
             value = value.substring(1);
         }
+        // remove spaces from rear
         while (value[value.length -1] == " ") {
             value = value.substring(0, value.length - 2);
         }
-    })
+        locationInfoTemp.push(value);
+    });
+    locationInfo = locationInfoTemp;
+
 
     // no search params
     if (locationInfo.length == 0) {
@@ -393,10 +415,59 @@ function parseLocation(locationString) {
         };
     }
     // if it has country or state, determine which one, and format them correctly
-    if (locationInfo.length == 2) {
+    if (locationInfo.length == 2 || locationInfo.length == 3) {
         // check if it's a state
-        var locations = require('locations');
+        var locations = require('./locations');
+        var isState = false;
+        var state = undefined;
+        var isCountry = false;
+        var country = undefined;
 
+        locations.stateList.forEach(function (value, index, array) {
+            if (value.name == locationInfo[1].toLowerCase() || value.abbreviation == locationInfo[1].toUpperCase()) {
+                isState = true;
+                state = value.abbreviation.toUpperCase();
+            }
+        });
+        locations.countryList.forEach(function (value, index, array) {
+            if (value.name == locationInfo[1].toLowerCase() || value.code == locationInfo[1].toUpperCase()) {
+                isCountry = true;
+                country = value.code.toUpperCase();
+            }
+        });
+        if (locationInfo.length == 3) {
+            locations.countryList.forEach(function (value, index, array) {
+                if (value.name == locationInfo[1].toLowerCase() || value.code == locationInfo[2].toUpperCase()) {
+                    isCountry = true;
+                    country = value.code.toUpperCase();
+                }
+            });
+        }
+        if (isState && isCountry && locationInfo.length == 3) {
+            return {
+                city: locationInfo[0].toLowerCase(),
+                state: locationInfo[1].toLowerCase(),
+                country: locationInfo[2].toLowerCase()
+            }
+        } else if (isState) {
+            return {
+                city: locationInfo[0].toLowerCase(),
+                state: locationInfo[1].toLowerCase(),
+                country: undefined
+            }
+        } else if (isCountry) {
+            return {
+                city: locationInfo[0].toLowerCase(),
+                state: undefined,
+                country: locationInfo[1].toLowerCase()
+            }
+        } else {
+            return {
+                city: locationInfo[0].toLowerCase(),
+                state: undefined,
+                country: undefined
+            }
+        }
     }
 }
 
