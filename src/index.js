@@ -23,7 +23,8 @@ class Weather extends React.Component {
             humidity: "--",
             windSpeed: "--",
             windDirection: "--",
-            isValid: false
+            isValid: false,
+            zalgo: false
         }
 
         this.getData = this.getData.bind(this);
@@ -144,54 +145,62 @@ class Weather extends React.Component {
 
     cityNameInput = (event) => {
         this.setState( {city: event.target.value} );
+        if (event.target.value.toLowerCase() == "zalgo") {
+            this.setState({zalgo: true});
+        } else {
+            this.setState({zalgo: false});
+        }
         setTimeout(this.getData, 500);
     }
 
     render() {
         // get url
 
-        var url = window.location.href;
-        url = url.split("/")
-        var filtered = url.filter(function(value, index, arr) {
-            return value !== "";
-        });
-        var path = filtered.pop();
-
         if (this.state.isValid) {
-            // eslint-disable-next-line
-            if (path == "zalgo") {
-                return (
-                    <div>
-                        <div className="container pb-4 mt-4 title-box">
-                            <h1 className="display-4 col-xl-12">{zalgo('Get the Weather in ')}<br/><input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input'/></h1>
-                        </div>
-                        <div className="container centered">
-                            <img src={this.state.icon} width="100" height="100" alt=""/>
-                            <h2 style={{display: "inline"}}>{zalgo('In')} {zalgo(this.state.cityName)}, {zalgo(this.state.message)}</h2>
-                        </div>
-                        <div className="container">
-                            <div className="row">
-                                <div className="card col-md-4">
-                                    <div className="card-body">
-                                        <h5 className="card-title">{zalgo('Temperature')}</h5>
-                                        <p className="card-text">{zalgo('Right now in')} {zalgo(this.state.city)} {zalgo('it\'s')} <strong>{zalgo(this.state.temp)}</strong>{zalgo(', with a high of')} {zalgo(this.state.high)} zalgo{('and a low of')} {zalgo(this.state.low)}{zalgo('. Outside, it feels like')} {zalgo(this.state.feelsLike)}{zalgo('.')}</p>
-                                    </div>
+            return (
+                <div>
+                    <div className="container pb-4 mt-4 title-box">
+                        <h1 className="display-4 col-xl-12">Get the Weather in <br/><input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input'/></h1>
+                    </div>
+                    <div className="container centered">
+                        <img src={this.state.icon} width="100" height="100" alt=""/>
+                        <h2 style={{display: "inline"}}>In {this.state.cityName}, {this.state.message}</h2>
+                    </div>
+                    <div className="container">
+                        <div className="row">
+                            <div className="card col-md-4">
+                                <div className="card-body">
+                                    <h5 className="card-title">Temperature</h5>
+                                    <p className="card-text">Right now in {this.state.city} it's <strong>{this.state.temp}</strong>, with a high of {this.state.high} and a low of {this.state.low}. Outside, it feels like {this.state.feelsLike}.&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
                                 </div>
-                                <div className="card col-md-4">
-                                    <div className="card-body">
-                                            <h5 className="card-title">{zalgo('Wind')}</h5>
-                                            <p className="card-text">{zalgo('The wind is currently blowing to the')} {zalgo(this.state.windDirection)} {zalgo('at')} {zalgo(this.state.windSpeed)}{zalgo('.')}</p>
-                                    </div>
+                            </div>
+                            <div className="card col-md-4">
+                                <div className="card-body">
+                                        <h5 className="card-title">Wind</h5>
+                                        <p className="card-text">The wind is currently blowing to the {this.state.windDirection} at {this.state.windSpeed}.</p>
                                 </div>
-                                <div className="card col-md-4">
-                                    <div className="card-body">
-                                        <h5 className="card-title">{zalgo('Humidity')}</h5>
-                                        <p className="card-text">{zalgo('The humidity is currently')} <strong>{zalgo(this.state.humidity)}</strong>{zalgo('.')}</p>
-                                    </div>
+                            </div>
+                            <div className="card col-md-4">
+                                <div className="card-body">
+                                    <h5 className="card-title">Humidity<strong>&nbsp;</strong></h5>
+                                    <p className="card-text">&nbsp;The humidity is currently <strong>{this.state.humidity}.&nbsp;</strong>&nbsp;</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="container small text-muted centered mt-2">
+                    </div>
+                    <div className="container small text-muted centered mt-2">
+                        {this.state.serverTime}
+                    </div>
+                </div>
+            );
+        } else {
+            if (this.state.zalgo == true) {
+                return (
+                    <div>
+                        <div className="container pb-4 mt-4 title-box">
+                            <h1 className="display-4 col-xl-12">{zalgo('Get the Weather in')} <br/><input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input' value={this.state.city} autoFocus/></h1>
+                        </div>
+                        <div className="container small text-muted centered">
                             {zalgo(this.state.serverTime)}
                         </div>
                     </div>
@@ -200,51 +209,15 @@ class Weather extends React.Component {
                 return (
                     <div>
                         <div className="container pb-4 mt-4 title-box">
-                            <h1 className="display-4 col-xl-12">Get the Weather in <br/><input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input'/></h1>
+                            <h1 className="display-4 col-xl-12">Get the Weather in <br/><input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input' value={this.state.city} autoFocus/></h1>
                         </div>
-                        <div className="container centered">
-                            <img src={this.state.icon} width="100" height="100" alt=""/>
-                            <h2 style={{display: "inline"}}>In {this.state.cityName}, {this.state.message}</h2>
-                        </div>
-                        <div className="container">
-                            <div className="row">
-                                <div className="card col-md-4">
-                                    <div className="card-body">
-                                        <h5 className="card-title">Temperature</h5>
-                                        <p className="card-text">Right now in {this.state.city} it's <strong>{this.state.temp}</strong>, with a high of {this.state.high} and a low of {this.state.low}. Outside, it feels like {this.state.feelsLike}.&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p>
-                                    </div>
-                                </div>
-                                <div className="card col-md-4">
-                                    <div className="card-body">
-                                            <h5 className="card-title">Wind</h5>
-                                            <p className="card-text">The wind is currently blowing to the {this.state.windDirection} at {this.state.windSpeed}.</p>
-                                    </div>
-                                </div>
-                                <div className="card col-md-4">
-                                    <div className="card-body">
-                                        <h5 className="card-title">Humidity<strong>&nbsp;</strong></h5>
-                                        <p className="card-text">&nbsp;The humidity is currently <strong>{this.state.humidity}.&nbsp;</strong>&nbsp;</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="container small text-muted centered mt-2">
+                        <div className="container small text-muted centered">
                             {this.state.serverTime}
                         </div>
                     </div>
                 );
-            } 
-        } else {
-            return (
-                <div>
-                    <div className="container pb-4 mt-4 title-box">
-                        <h1 className="display-4 col-xl-12">Get the Weather in <br/><input type="text" onChange={this.cityNameInput} ref={this.cityNameRef} className='city-input'/></h1>
-                    </div>
-                    <div className="container small text-muted centered">
-                        {this.state.serverTime}
-                    </div>
-                </div>
-            );
+            }
+            
         }
             
     }
