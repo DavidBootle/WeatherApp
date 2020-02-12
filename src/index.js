@@ -363,6 +363,43 @@ function getWindDirection(deg) {
     if (deg >= 337.5 && deg <= 360) { return "north" } // if between 337.5 and 360 return north
 }
 
+function parseLocation(locationString) {
+    locationInfo = locationString.split(',')
+    locationInfo = locationInfo.filter(function(value, index, array) { return value != "" }); // removes blank space objects
+    locationInfoTemp = [];
+    locationInfo.forEach(function(value, index, array) {
+        while (value[0] == " ") {
+            value = value.substring(1);
+        }
+        while (value[value.length -1] == " ") {
+            value = value.substring(0, value.length - 2);
+        }
+    })
+
+    // no search params
+    if (locationInfo.length == 0) {
+        return {
+            city: undefined,
+            state: undefined,
+            country: undefined
+        };
+    } // no search parameters
+    // only city
+    if (locationInfo.length == 1) {
+        return {
+            city: locationInfo[0].toLowerCase(),
+            state: undefined,
+            country: undefined
+        };
+    }
+    // if it has country or state, determine which one, and format them correctly
+    if (locationInfo.length == 2) {
+        // check if it's a state
+        var locations = require('locations');
+
+    }
+}
+
 // #region Start
 
 ReactDOM.render((
